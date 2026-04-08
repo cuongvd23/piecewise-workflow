@@ -1,0 +1,11 @@
+{
+  "name": "piecewise-workflow",
+  "version": "1.0.0",
+  "description": "Break large features into small, reviewable pieces with planning, parallel development, verification, and clean commits.",
+  "author": {
+    "name": "cuongvd23",
+    "url": "https://github.com/cuongvd23"
+  },
+  "repository": "https://github.com/cuongvd23/piecewise-workflow",
+  "keywords": ["workflow", "git", "github", "parallel", "planning", "commits"]
+}
