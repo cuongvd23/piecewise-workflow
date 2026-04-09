@@ -30,6 +30,15 @@ Skills are namespaced under `piecewise-workflow`:
 /piecewise-workflow:commit
 ```
 
+When installed via `npx skills add`, skills are symlinked into `~/.claude/skills/` and can be used directly without the namespace:
+
+```
+/plan-task 123
+/parallel-develop 201 202 204
+/post-task-verification 123
+/commit
+```
+
 ## Requirements
 
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code)
