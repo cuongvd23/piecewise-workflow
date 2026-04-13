@@ -12,8 +12,8 @@ model=""
 	echo "Usage: $0 <worktree-path> <message> [--model <model>]" && exit 1
 [ ! -d "$worktree_path" ] && echo "Directory not found: $worktree_path" && exit 1
 
-# Open tmux pane with claude
-claude_cmd="claude${model:+ --model '$model'}"
+# Open tmux pane with claude in plan mode
+claude_cmd="claude --permission-mode plan${model:+ --model '$model'}"
 current_pane=$(tmux display-message -p '#{pane_id}')
 pane_id=$(tmux split-window -h -P -F '#{pane_id}' -t "$current_pane" \
 	"cd '$worktree_path' && $claude_cmd")
@@ -35,8 +35,6 @@ pane_id=$(tmux split-window -h -P -F '#{pane_id}' -t "$current_pane" \
 		sleep 2
 		tmux capture-pane -t "$pane_id" -p 2>/dev/null | grep -q "INSERT" && break
 	done
-	sleep 1
-	tmux send-keys -t "$pane_id" BTab
 	sleep 1
 	echo -n "$message" | tmux load-buffer -
 	tmux paste-buffer -p -t "$pane_id"
