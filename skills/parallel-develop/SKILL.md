@@ -10,7 +10,7 @@ Spawn parallel Claude Code workers to solve multiple GitHub issues simultaneousl
 
 ## Step 1: Validate Issues
 
-- Verify at least 2 issue numbers are provided
+- Verify at least 1 issue number is provided
 - Run `gh issue view <number>` for each to confirm they exist
 - Only parallelize issues that are truly independent — if issue B depends on issue A's output, run B after A, not in parallel
 - Recommend maximum 4-6 issues for tmux usability
