@@ -1,18 +1,18 @@
 ---
 name: parallel-develop
-description: Set up parallel development for multiple issues using git worktrees and tmux.
+description: Set up development for one or more issues using git worktrees and tmux.
 argument-hint: <issue-numbers...>
 ---
 
 # Parallel Develop
 
-Spawn parallel Claude Code workers to solve multiple GitHub issues simultaneously.
+Spawn Claude Code workers to solve GitHub issues in isolated worktrees.
 
 ## Step 1: Validate Issues
 
 - Verify at least 1 issue number is provided
 - Run `gh issue view <number>` for each to confirm they exist
-- Only parallelize issues that are truly independent — if issue B depends on issue A's output, run B after A, not in parallel
+- When using multiple issues, only parallelize issues that are truly independent — if issue B depends on issue A's output, run B after A, not in parallel
 - Recommend maximum 4-6 issues for tmux usability
 
 ## Step 2: Spawn Workers
