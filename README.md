@@ -1,5 +1,7 @@
 # piecewise-workflow
 
+[![skills.sh](https://skills.sh/b/cuongvd23/piecewise-workflow)](https://skills.sh/cuongvd23/piecewise-workflow)
+
 A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin that breaks large features into small, reviewable pieces.
 
 Built following the [Agent Skills](https://agentskills.io) open standard.
