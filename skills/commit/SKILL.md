@@ -21,13 +21,13 @@ user-invocable: true
 
 ## Commit Message
 
-Format: `<prefix>: <short description>`
+Format: `<prefix>(<scope>): <short description>` — scope is the lowercase kebab-case feature or component name; omit it only when no single component fits
 
 | Category | Patterns | Prefix |
 |----------|----------|--------|
 | Tests | `*_test.go`, `test_*.py`, `*_test.py`, `tests/` | `test:` |
 | Documentation | `*.md`, `docs/`, `README*` | `docs:` |
-| Lint/Format | Whitespace, import ordering, formatting only | `lint:` |
+| Lint/Format | Whitespace, import ordering, formatting only | `style:` |
 | Dependencies | `go.mod`, `go.sum`, `requirements*.txt`, `pyproject.toml` | `chore:` |
 | Config | `*.yaml`, `*.yml`, `*.json` configs | `chore:` |
 | Database | `migrations/`, `db/queries/` | `chore:` or `feat:` |
