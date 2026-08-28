@@ -48,10 +48,27 @@ Create sub-issues following this pattern:
 
 ### For Each Sub-Issue, Define:
 
-- **Title**: Clear, descriptive title (NO parent issue reference)
-- **Description**: Self-contained explanation of what needs to be done — **NO cross-references** (see anti-patterns below)
-- **Files to modify/create**: List specific paths
-- **Acceptance criteria**: Checkboxes for completion
+- **Title**: `N. <description>` in recommended execution order (NO parent issue reference, NO `[Feature]`-style tags)
+- **Body**: Self-contained **Goal / Scope / Acceptance criteria** — **NO cross-references** (see anti-patterns below)
+- **Acceptance criteria**: Checkboxes for completion under that section
+
+Body shape:
+
+```markdown
+## Goal
+
+**One-sentence desired outcome.**
+
+- Short context bullets
+
+## Scope
+
+- Conceptual work items for this sub-issue
+
+## Acceptance criteria
+
+- [ ] Observable done conditions
+```
 
 **No cross-references:** Do not include issue numbers (`#NNN`), relative references (`Sub-Issue N`, `from the proto issue`), dependency sections (`Blocked by:`, `Depends on:`, `Part of:`), or inline mentions of other issues. Write each description as if it were the only issue — describe *what* to do and *where*, not *which other issue* it relates to. GitHub's native sub-issue hierarchy handles all linking.
 
@@ -67,14 +84,21 @@ Before creating any issues, use the AskUserQuestion tool to confirm:
 
 If user approves:
 
-### For each sub-issue:
+### First, check available labels (skip labeling if none fit):
 
-1. Create the issue with assignee:
+```bash
+gh label list --json name --jq '.[].name'
+```
+
+### Then, for each sub-issue:
+
+1. Create the issue with assignee (and a matching existing label, if the repo uses labels):
 
 ```bash
 gh issue create \
   --title "..." \
   --body "..." \
+  --label "<select-from-existing>" \
   --assignee "@me"
 ```
 
