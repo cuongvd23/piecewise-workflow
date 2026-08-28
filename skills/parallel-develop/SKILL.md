@@ -39,7 +39,7 @@ For each issue:
 
 After all workers are spawned:
 ```bash
-tmux select-layout main-vertical
+tmux select-layout main-horizontal
 ```
 
 ## Step 3: Output Summary
