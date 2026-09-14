@@ -73,18 +73,4 @@ current_pane=$(tmux display-message -p '#{pane_id}')
 pane_id=$(tmux split-window -h -P -F '#{pane_id}' -t "$current_pane" \
 	-c "$worktree_path" "${worker_cmd[@]}")
 
-# Preserve Claude's folder-trust confirmation; other agents handle their own prompts.
-if [ "$agent" = "claude" ]; then
-	(
-		for ((i = 0; i < 15; i++)); do
-			sleep 2
-			content=$(tmux capture-pane -t "$pane_id" -p 2>/dev/null) || break
-			if printf '%s\n' "$content" | grep -Fqi 'Yes, I trust this folder'; then
-				tmux send-keys -t "$pane_id" Enter
-				break
-			fi
-		done
-	) >/dev/null 2>&1 &
-fi
-
 printf '%s\n' "$pane_id"

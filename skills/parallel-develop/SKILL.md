@@ -62,7 +62,7 @@ Provide:
 ## Notes
 
 - Workers present a plan for approval before implementing. Claude Code uses `--permission-mode plan`, OpenCode uses `--agent plan`, and Gemini CLI uses `--approval-mode plan`. Codex and Pi receive prompt-based planning instructions; these do not add a sandbox restriction.
-- Workers remain interactive. Claude's folder-trust prompt is confirmed automatically; handle any other startup or trust prompts in the worker pane.
+- Workers remain interactive. Handle startup or trust prompts in the worker pane.
 - Switch to a worker pane with `Ctrl+b + arrow keys` to intervene if needed
 - If a pane gets stuck, use `Ctrl+c` to interrupt
 - Resolve `<git-user>` with `git config user.name | tr ' ' '-' | tr '[:upper:]' '[:lower:]'`
