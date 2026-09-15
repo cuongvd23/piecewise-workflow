@@ -1,45 +1,76 @@
 #!/bin/bash
-# Open a tmux pane with Claude Code in a worktree, auto-trust, and send initial message
-# Usage: spawn-worker.sh <worktree-path> <message> [--model <model>]
+# Open a tmux pane with a coding agent in a worktree and send an initial message.
+# Usage: spawn-worker.sh <worktree-path> <message> [--agent claude|codex|pi|opencode|gemini] [--model <model>]
 set -e
+
+usage() {
+	printf 'Usage: %s <worktree-path> <message> [--agent claude|codex|pi|opencode|gemini] [--model <model>]\n' "$0" >&2
+}
+
+fail() {
+	printf '%s\n' "$1" >&2
+	exit 1
+}
 
 worktree_path="${1:-}"
 message="${2:-}"
+agent="claude"
 model=""
-[ "${3:-}" = "--model" ] && model="${4:-}"
 
-[ -z "$worktree_path" ] || [ -z "$message" ] &&
-	echo "Usage: $0 <worktree-path> <message> [--model <model>]" && exit 1
-[ ! -d "$worktree_path" ] && echo "Directory not found: $worktree_path" && exit 1
+if [ -z "$worktree_path" ] || [ -z "$message" ]; then
+	usage
+	exit 1
+fi
+shift 2
 
-# Open tmux pane with claude in plan mode
-claude_cmd="claude --permission-mode plan${model:+ --model '$model'}"
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		--agent|--model)
+			[ -n "${2:-}" ] && [[ "$2" != --* ]] || fail "Missing value for $1"
+			if [ "$1" = "--agent" ]; then
+				agent="$2"
+			else
+				model="$2"
+			fi
+			shift 2
+			;;
+		*)
+			usage
+			fail "Unknown option: $1"
+			;;
+	esac
+done
+
+case "$agent" in
+	claude|codex|pi|opencode|gemini) ;;
+	*) fail "Unsupported agent: $agent (choose claude, codex, pi, opencode, or gemini)" ;;
+esac
+
+[ -d "$worktree_path" ] || fail "Directory not found: $worktree_path"
+command -v tmux >/dev/null 2>&1 || fail "Required executable not found: tmux"
+command -v "$agent" >/dev/null 2>&1 || fail "Required executable not found: $agent"
+worktree_path=$(cd -- "$worktree_path" && pwd -P)
+
+prompt="Investigate the task and follow the repository's AGENTS.md and CLAUDE.md guidance. Present an implementation plan and wait for the user's approval before implementing or modifying files.
+
+$message"
+
+worker_cmd=("$agent")
+case "$agent" in
+	claude) worker_cmd+=(--permission-mode plan) ;;
+	opencode) worker_cmd+=(--agent plan) ;;
+	gemini) worker_cmd+=(--approval-mode plan) ;;
+esac
+[ -z "$model" ] || worker_cmd+=(--model "$model")
+case "$agent" in
+	opencode) worker_cmd+=(--prompt "$prompt") ;;
+	gemini) worker_cmd+=(--prompt-interactive "$prompt") ;;
+	*) worker_cmd+=(-- "$prompt") ;;
+esac
+
+# Pass arguments directly to tmux without interpolating a shell command.
 current_pane=$(tmux display-message -p '#{pane_id}')
 pane_id=$(tmux split-window -h -P -F '#{pane_id}' -t "$current_pane" \
-	"cd '$worktree_path' && $claude_cmd")
+	-c "$worktree_path" "${worker_cmd[@]}")
 
-# Background: auto-trust → wait for ready → send message
-(
-	for i in $(seq 1 15); do
-		sleep 2
-		content=$(tmux capture-pane -t "$pane_id" -p 2>/dev/null || true)
-		if echo "$content" | grep -qi "trust"; then
-			# Trust prompt is a selection UI with "Yes" pre-selected — just press Enter
-			tmux send-keys -t "$pane_id" Enter
-			sleep 2
-			break
-		fi
-		echo "$content" | grep -q "INSERT" && break
-	done
-	for i in $(seq 1 30); do
-		sleep 2
-		tmux capture-pane -t "$pane_id" -p 2>/dev/null | grep -q "INSERT" && break
-	done
-	sleep 1
-	echo -n "$message" | tmux load-buffer -
-	tmux paste-buffer -p -t "$pane_id"
-	sleep 1
-	tmux send-keys -t "$pane_id" Enter
-) &
-
-echo "$pane_id"
+printf '%s\n' "$pane_id"
